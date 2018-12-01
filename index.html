@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title></title>
+		<style>
+			html,
+			body,
+			#map {
+				height: 90%;
+				width: 100%;
+				margin: 0;
+			}
+		</style>
+		<script type="text/javascript" src="./js/jquery.js"></script>
+		<script type="text/javascript" src="./js/init_Data.js"></script>
+		<script type="text/javascript" src="./js/custom_Lushu.js"></script>
+		<script type="text/javascript" src="http://api.map.baidu.com/getscript?v=2.0&amp;ak=bB8H5rgknsMqiKIDV0ALeuocIbXd6Uro&amp;services=&amp;t=20171004185957"></script>
+	</head>
+
+	<body>
+		<div id="map"></div>
+		<button onclick="stop()">暂停</button>
+		<button onclick="starts()">开始</button>
+		<button onclick="fast()">加快</button>
+		<script>
+			//自定义目标数据
+			var tarData = [{
+					latitude: 34.27563,
+					longitude: 108.99059,
+					time: "2018-10-30 13:00:32"
+				},
+				{
+					latitude: 34.27563,
+					longitude: 108.99059,
+					time: "2018-10-30 13:23:32"
+				},
+				{
+					latitude: 34.276365,
+					longitude: 108.980291,
+					time: "2018-10-30 13:43:32"
+				},
+				{
+					latitude: 34.276361,
+					longitude: 108.969296,
+					time: "2018-10-30 15:55:32"
+				},
+				{
+					latitude: 34.276164,
+					longitude: 108.953575,
+					time: "2018-10-30 16:15:32"
+				},
+				{
+					latitude: 34.276164,
+					longitude: 108.953575,
+					time: "2018-10-30 19:55:32"
+				},
+				{
+					latitude: 34.287457,
+					longitude: 108.953593,
+					time: "2018-10-30 23:55:32"
+				},
+				{
+					latitude: 34.27563,
+					longitude: 108.99059,
+					time: "2018-10-31 02:03:32"
+				}
+			];
+
+			//自定义伴随数据
+			var accData = [{
+					latitude: 34.28563,
+					longitude: 108.98059,
+					time: "2018-10-30 11:13:32"
+				},
+				{
+					latitude: 34.28563,
+					longitude: 108.98059,
+					time: "2018-10-30 12:43:32"
+				},
+				{
+					latitude: 34.277365,
+					longitude: 108.981291,
+					time: "2018-10-30 13:23:32"
+				},
+				{
+					latitude: 34.277361,
+					longitude: 108.970296,
+					time: "2018-10-30 15:45:32"
+				},
+				{
+					latitude: 34.277361,
+					longitude: 108.970296,
+					time: "2018-10-30 16:05:32"
+				},
+				{
+					latitude: 34.276164,
+					longitude: 108.953575,
+					time: "2018-10-30 16:15:32"
+				},
+				{
+					latitude: 34.276164,
+					longitude: 108.953575,
+					time: "2018-10-30 19:55:32"
+				},
+				{
+					latitude: 34.287457,
+					longitude: 108.953593,
+					time: "2018-10-30 23:55:32"
+				},
+				{
+					latitude: 34.27563,
+					longitude: 108.99059,
+					time: "2018-10-31 02:03:32"
+				}
+			];
+
+			//初始化地图
+			var map = new BMap.Map("map");
+			map.enableScrollWheelZoom(true);
+			map.centerAndZoom(new BMap.Point(108.967584, 34.28106), 16);
+
+			//获取data数据中的经纬度点并格式化点为BMap点
+			var tarPoints = getBMapPoints(tarData);
+			var accPoints = getBMapPoints(accData);
+
+			//经过计算后得到的总坐标点
+			var tarAllPoints = [];
+			var accAllPoints = [];
+
+			//此处是先去根据时间判断先后启动，后启动的在起点等待，也就是添加起点的坐标
+			var tarStartTime = new Date(tarData[0]["time"])
+			var accStartTime = new Date(accData[0]["time"])
+			//判断谁大谁小
+			if(tarStartTime - accStartTime > 0) {
+				var num = (tarStartTime - accStartTime) / 30000
+				tarAllPoints.push(...addCoord(tarPoints[0], num));
+			}
+			if(accStartTime - tarStartTime > 0) {
+				var num = (accStartTime - tarStartTime) / 30000
+				accAllPoints.push(...addCoord(accPoints[0], num));
+			}
+
+			//添加计算的坐标
+			tarAllPoints.push(...sumPoints(tarPoints, tarData));
+			accAllPoints.push(...sumPoints(accPoints, accData));
+
+			//目标icon
+			var tarIcon = new BMap.Icon("./img/tar.png", new BMap.Size(37, 46), {
+				anchor: new BMap.Size(20, 20)
+			});
+			//伴随icon
+			var accIcon = new BMap.Icon("./img/acc.png", new BMap.Size(37, 46), {
+				anchor: new BMap.Size(20, 20)
+			});
+
+			//初始化对象
+			var tarLuShu = new customLushu(map, tarAllPoints, {
+				icon: tarIcon
+			})
+			var accLuShu = new customLushu(map, accAllPoints, {
+				icon: accIcon,
+				strokeColor: '#0096ff',
+				strokeWeight: 2,
+				strokeOpacity: 0.7
+			})
+
+			//开始运行
+			tarLuShu.start();
+			accLuShu.start();
+
+			/**
+			 * 暂停
+			 */
+			function stop() {
+				tarLuShu.stop();
+				accLuShu.stop();
+			}
+
+			/**
+			 * 开始
+			 */
+			function starts() {
+				tarLuShu.start();
+				accLuShu.start();
+			}
+
+			/**
+			 * 加快
+			 */
+			function fast() {
+				tarLuShu.fast();
+				accLuShu.fast();
+			}
+		</script>
+	</body>
+
+</html>
