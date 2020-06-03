@@ -25,6 +25,11 @@
 		<button onclick="starts()">开始</button>
 		<button onclick="fast()">加快</button>
 		<script>
+			
+			/**
+			 * 示例：伴随与目标的轨迹，根据同一时间比例计算，可以重点突出伴随的效果，只要时间一致，那么伴随效果就能显现
+			 */
+			
 			//自定义目标数据
 			var tarData = [
 				{
@@ -124,7 +129,7 @@
 			//此处是先去根据时间判断先后启动，后启动的在起点等待，也就是添加起点的坐标
 			var tarStartTime = new Date(tarData[0]["time"])
 			var accStartTime = new Date(accData[0]["time"])
-			//判断谁大谁小
+			//判断时间前后，根据同一个比例进行添加对应的坐标
 			if(tarStartTime - accStartTime > 0) {
 				var num = (tarStartTime - accStartTime) / 30000
 				tarAllPoints.push(...addCoord(tarPoints[0], num));
@@ -134,7 +139,7 @@
 				accAllPoints.push(...addCoord(accPoints[0], num));
 			}
 
-			//添加计算的坐标
+			// 添加计算的坐标，根据同一个比例进行添加对应的坐标
 			tarAllPoints.push(...sumPoints(tarPoints, tarData));
 			accAllPoints.push(...sumPoints(accPoints, accData));
 
