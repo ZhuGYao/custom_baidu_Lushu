@@ -30,7 +30,7 @@
 			 * 示例：伴随与目标的轨迹，根据同一时间比例计算，可以重点突出伴随的效果，只要时间一致，那么伴随效果就能显现
 			 */
 			
-			//自定义目标数据
+			// 自定义目标数据
 			var tarData = [
 				{
 					latitude: 34.27563,
@@ -69,7 +69,7 @@
 				}
 			];
 
-			//自定义伴随数据
+			// 自定义伴随数据
 			var accData = [
 				{
 					latitude: 34.28563,
@@ -113,23 +113,23 @@
 				}
 			];
 
-			//初始化地图
+			// 初始化地图
 			var map = new BMap.Map("map");
 			map.enableScrollWheelZoom(true);
 			map.centerAndZoom(new BMap.Point(108.967584, 34.28106), 16);
 
-			//获取data数据中的经纬度点并格式化点为BMap点
+			// 获取data数据中的经纬度点并格式化点为BMap点
 			var tarPoints = getBMapPoints(tarData);
 			var accPoints = getBMapPoints(accData);
 
-			//经过计算后得到的总坐标点
+			// 经过计算后得到的总坐标点
 			var tarAllPoints = [];
 			var accAllPoints = [];
 
-			//此处是先去根据时间判断先后启动，后启动的在起点等待，也就是添加起点的坐标
+			// 此处是先去根据时间判断先后启动，后启动的在起点等待，也就是添加起点的坐标
 			var tarStartTime = new Date(tarData[0]["time"])
 			var accStartTime = new Date(accData[0]["time"])
-			//判断时间前后，根据同一个比例进行添加对应的坐标
+			// 判断时间前后，根据同一个比例进行添加对应的坐标
 			if(tarStartTime - accStartTime > 0) {
 				var num = (tarStartTime - accStartTime) / 30000
 				tarAllPoints.push(...addCoord(tarPoints[0], num));
@@ -143,16 +143,16 @@
 			tarAllPoints.push(...sumPoints(tarPoints, tarData));
 			accAllPoints.push(...sumPoints(accPoints, accData));
 
-			//目标icon
+			// 目标icon
 			var tarIcon = new BMap.Icon("./img/tar.png", new BMap.Size(37, 46), {
 				anchor: new BMap.Size(20, 20)
 			});
-			//伴随icon
+			// 伴随icon
 			var accIcon = new BMap.Icon("./img/acc.png", new BMap.Size(37, 46), {
 				anchor: new BMap.Size(20, 20)
 			});
 
-			//初始化对象
+			// 初始化对象
 			var tarLuShu = new customLushu(map, tarAllPoints, {
 				icon: tarIcon
 			})
@@ -163,7 +163,7 @@
 				strokeOpacity: 0.7
 			})
 
-			//开始运行
+			// 开始运行
 			tarLuShu.start();
 			accLuShu.start();
 
