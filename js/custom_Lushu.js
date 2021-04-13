@@ -5,7 +5,7 @@
 	var customLushu = function(map, path, options) {
 
 		//如果路径信息小于1或者为空,则直接返回
-		if(!path || path.length <= 0) {
+		if (!path || path.length <= 0) {
 			return;
 		}
 		this._path = path
@@ -57,7 +57,7 @@
 		//自调方法
 		function move() {
 			that.iconMkr.setPosition(that._path[that.i]);
-			if(that.i < paths) {
+			if (that.i < paths) {
 				that._pause = setTimeout(function() {
 					that.i++;
 					move(that.i);
@@ -80,9 +80,9 @@
 	 * 播放加快---三种播放速度,适用于默认速度,如果自定义起始速度，可以自己修改
 	 */
 	customLushu.prototype.fast = function() {
-		if(this._opt.speed == 50) {
+		if (this._opt.speed == 50) {
 			this._opt.speed = 25;
-		} else if(this._opt.speed == 25) {
+		} else if (this._opt.speed == 25) {
 			this._opt.speed = 5;
 		} else {
 			this._opt.speed = 50;
